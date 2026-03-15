@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = 'https://chat-with-website-oxcf.onrender.com';
 
 function formatMessage(text) {
   const lines = text.split('\n');
