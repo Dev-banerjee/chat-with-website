@@ -6,13 +6,13 @@ const API_URL = 'https://chat-with-website-oxcf.onrender.com';
 function formatMessage(text) {
   const lines = text.split('\n');
   return lines.map((line, i) => {
-    if (line.startsWith('## ')) return <h2 key={i} style={{ fontSize: 18, fontWeight: 600, color: '#e2e8f0', margin: '16px 0 8px' }}>{line.replace('## ', '')}</h2>;
-    if (line.startsWith('# ')) return <h1 key={i} style={{ fontSize: 20, fontWeight: 700, color: '#ffffff', margin: '16px 0 8px' }}>{line.replace('# ', '')}</h1>;
+    if (line.startsWith('## ')) return <h2 key={i} style={{ fontSize: 17, fontWeight: 600, color: '#e2e8f0', margin: '16px 0 8px' }}>{line.replace('## ', '')}</h2>;
+    if (line.startsWith('# ')) return <h1 key={i} style={{ fontSize: 19, fontWeight: 700, color: '#ffffff', margin: '16px 0 8px' }}>{line.replace('# ', '')}</h1>;
     if (line.startsWith('**Summary:**') || line.startsWith('Summary:')) return <div key={i} style={{ background: 'rgba(108,71,255,0.15)', border: '1px solid rgba(108,71,255,0.3)', borderRadius: 8, padding: '10px 14px', marginTop: 14, fontSize: 14, color: '#a78bfa' }}>{line}</div>;
-    if (line.match(/^[\*\-] /)) return <div key={i} style={{ display: 'flex', gap: 10, margin: '6px 0', paddingLeft: 4 }}><span style={{ color: '#6c47ff', marginTop: 2, flexShrink: 0 }}>▸</span><span style={{ color: '#cbd5e1', fontSize: 15, lineHeight: 1.7 }}>{line.replace(/^[\*\-] /, '')}</span></div>;
-    if (line.match(/^\d+\. /)) return <div key={i} style={{ display: 'flex', gap: 10, margin: '6px 0', paddingLeft: 4 }}><span style={{ color: '#6c47ff', fontWeight: 600, fontSize: 13, flexShrink: 0, minWidth: 20 }}>{line.match(/^\d+/)[0]}.</span><span style={{ color: '#cbd5e1', fontSize: 15, lineHeight: 1.7 }}>{line.replace(/^\d+\. /, '')}</span></div>;
+    if (line.match(/^[\*\-] /)) return <div key={i} style={{ display: 'flex', gap: 10, margin: '6px 0', paddingLeft: 4 }}><span style={{ color: '#6c47ff', marginTop: 2, flexShrink: 0 }}>▸</span><span style={{ color: '#cbd5e1', fontSize: 14, lineHeight: 1.7 }}>{line.replace(/^[\*\-] /, '')}</span></div>;
+    if (line.match(/^\d+\. /)) return <div key={i} style={{ display: 'flex', gap: 10, margin: '6px 0', paddingLeft: 4 }}><span style={{ color: '#6c47ff', fontWeight: 600, fontSize: 13, flexShrink: 0, minWidth: 20 }}>{line.match(/^\d+/)[0]}.</span><span style={{ color: '#cbd5e1', fontSize: 14, lineHeight: 1.7 }}>{line.replace(/^\d+\. /, '')}</span></div>;
     if (line.trim() === '') return <div key={i} style={{ height: 8 }} />;
-    return <p key={i} style={{ color: '#cbd5e1', fontSize: 15, lineHeight: 1.8, margin: '4px 0' }}>{line}</p>;
+    return <p key={i} style={{ color: '#cbd5e1', fontSize: 14, lineHeight: 1.8, margin: '4px 0' }}>{line}</p>;
   });
 }
 
@@ -41,7 +41,7 @@ export default function App() {
     resize();
     window.addEventListener('resize', resize);
 
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < 60; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -55,7 +55,6 @@ export default function App() {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       ctx.fillStyle = '#080810';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -71,21 +70,12 @@ export default function App() {
       ctx.fillStyle = gradient2;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const gradient3 = ctx.createRadialGradient(canvas.width * 0.5, canvas.height * 0.1, 0, canvas.width * 0.5, canvas.height * 0.1, 300);
-      gradient3.addColorStop(0, 'rgba(255,71,163,0.06)');
-      gradient3.addColorStop(1, 'transparent');
-      ctx.fillStyle = gradient3;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       const gridSize = 60;
-      const vanishX = canvas.width / 2;
-      const vanishY = canvas.height * 0.4;
-
       for (let x = 0; x <= canvas.width; x += gridSize) {
         const progress = x / canvas.width;
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(vanishX + (x - vanishX) * 0.1, vanishY);
+        ctx.lineTo(canvas.width / 2 + (x - canvas.width / 2) * 0.1, canvas.height * 0.4);
         ctx.strokeStyle = `rgba(108,71,255,${0.04 + Math.abs(progress - 0.5) * 0.02})`;
         ctx.lineWidth = 0.5;
         ctx.stroke();
@@ -103,23 +93,18 @@ export default function App() {
       particles.forEach(p => {
         p.z -= p.speed * 2;
         if (p.z <= 0) p.z = 1000;
-
         const scale = 1000 / p.z;
         const px = (p.x - canvas.width / 2) * scale + canvas.width / 2;
         const py = (p.y - canvas.height / 2) * scale + canvas.height / 2;
         const size = p.size * scale;
         const opacity = Math.min(p.opacity, (1000 - p.z) / 300);
-
         if (px < 0 || px > canvas.width || py < 0 || py > canvas.height) return;
-
-        ctx.beginPath();
-        ctx.arc(px, py, Math.max(0.1, size), 0, Math.PI * 2);
-        ctx.fillStyle = p.color.replace(')', `,${opacity})`).replace('rgb', 'rgba').replace('#', '');
-
         const hex = p.color;
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
         const b = parseInt(hex.slice(5, 7), 16);
+        ctx.beginPath();
+        ctx.arc(px, py, Math.max(0.1, size), 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${r},${g},${b},${opacity})`;
         ctx.fill();
       });
@@ -184,91 +169,103 @@ export default function App() {
         .hint-chip:hover { background: rgba(108,71,255,0.25) !important; color: #c4b5fd !important; transform: translateY(-2px); }
         .ask-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,71,255,0.5) !important; }
         .ask-btn:active:not(:disabled) { transform: translateY(0); }
-        .url-input:focus { border-color: rgba(108,71,255,0.6) !important; box-shadow: 0 0 0 3px rgba(108,71,255,0.1) !important; }
-        .question-input:focus { border-color: rgba(108,71,255,0.6) !important; box-shadow: 0 0 0 3px rgba(108,71,255,0.1) !important; }
+        .url-input:focus { border-color: rgba(108,71,255,0.6) !important; }
+        .question-input:focus { border-color: rgba(108,71,255,0.6) !important; }
+
+        @media (max-width: 600px) {
+          .header-title { font-size: 32px !important; }
+          .header-sub { font-size: 14px !important; }
+          .header-wrap { margin-bottom: 20px !important; padding-top: 10px !important; }
+          .messages-box { padding: 16px !important; max-height: calc(100vh - 280px) !important; min-height: 300px !important; }
+          .input-form { flex-direction: column !important; }
+          .ask-btn { width: 100% !important; padding: 14px !important; }
+          .msg-avatar { width: 28px !important; height: 28px !important; font-size: 9px !important; }
+          .msg-gap { gap: 10px !important; }
+          .ai-bubble { padding: 12px 14px !important; }
+          .hint-area { padding: 20px 10px !important; }
+        }
       `}</style>
 
       <canvas ref={canvasRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }} />
 
-      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 20px 60px', fontFamily: '"Inter", system-ui, sans-serif' }}>
+      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 16px 40px', fontFamily: '"Inter", system-ui, sans-serif' }}>
         <div style={{ width: '100%', maxWidth: 740 }}>
 
-          <div style={{ textAlign: 'center', marginBottom: 48, animation: mounted ? 'fadeInUp 0.9s ease both' : 'none' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(108,71,255,0.12)', border: '1px solid rgba(108,71,255,0.25)', borderRadius: 30, padding: '6px 16px', marginBottom: 20 }}>
-              <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#6c47ff', animation: 'pulse 2s infinite' }} />
-              <span style={{ fontSize: 11, color: '#a78bfa', letterSpacing: '0.1em', fontWeight: 600 }}>POWERED BY GROQ AI</span>
+          <div className="header-wrap" style={{ textAlign: 'center', marginBottom: 32, animation: mounted ? 'fadeInUp 0.9s ease both' : 'none' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(108,71,255,0.12)', border: '1px solid rgba(108,71,255,0.25)', borderRadius: 30, padding: '5px 14px', marginBottom: 14 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#6c47ff', animation: 'pulse 2s infinite' }} />
+              <span style={{ fontSize: 10, color: '#a78bfa', letterSpacing: '0.1em', fontWeight: 600 }}>POWERED BY GROQ AI</span>
             </div>
-
-            <h1 style={{ fontSize: 52, fontWeight: 800, lineHeight: 1.1, marginBottom: 16, background: 'linear-gradient(135deg, #ffffff 0%, #a78bfa 40%, #00d4ff 100%)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', animation: 'shimmer 5s linear infinite' }}>
+            <h1 className="header-title" style={{ fontSize: 46, fontWeight: 800, lineHeight: 1.1, marginBottom: 12, background: 'linear-gradient(135deg, #ffffff 0%, #a78bfa 40%, #00d4ff 100%)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', animation: 'shimmer 5s linear infinite' }}>
               Chat with any<br />website
             </h1>
-            <p style={{ color: '#64748b', fontSize: 17, lineHeight: 1.7, maxWidth: 480, margin: '0 auto' }}>
+            <p className="header-sub" style={{ color: '#64748b', fontSize: 16, lineHeight: 1.7, maxWidth: 480, margin: '0 auto' }}>
               Paste any URL and have a deep conversation with its content using AI
             </p>
           </div>
 
           <div style={{ animation: mounted ? 'fadeInUp 0.9s ease 0.15s both' : 'none' }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '6px 6px 6px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '6px 6px 6px 16px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
               {urlLocked ? (
                 <>
-                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 8px rgba(34,197,94,0.6)' }} />
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+                    <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 8px rgba(34,197,94,0.6)' }} />
                     <span style={{ color: '#94a3b8', fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{url}</span>
                   </div>
-                  <button onClick={handleReset} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', borderRadius: 10, padding: '8px 16px', fontSize: 13, cursor: 'pointer', flexShrink: 0, transition: 'all 0.2s' }}>
+                  <button onClick={handleReset} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', borderRadius: 8, padding: '8px 14px', fontSize: 13, cursor: 'pointer', flexShrink: 0, transition: 'all 0.2s' }}>
                     New chat
                   </button>
                 </>
               ) : (
                 <input className="url-input" type="url" placeholder="https://en.wikipedia.org/wiki/JavaScript" value={url} onChange={e => setUrl(e.target.value)}
-                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#e2e8f0', fontSize: 15, padding: '10px 0', transition: 'all 0.3s' }} />
+                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#e2e8f0', fontSize: 14, padding: '10px 0' }} />
               )}
             </div>
           </div>
 
           {messages.length === 0 && !loading ? (
-            <div style={{ textAlign: 'center', padding: '48px 20px', animation: mounted ? 'fadeInUp 0.9s ease 0.3s both' : 'none' }}>
-              <div style={{ fontSize: 44, marginBottom: 16, display: 'block', animation: 'float 3s ease-in-out infinite' }}>💬</div>
-              <p style={{ color: '#475569', fontSize: 15, marginBottom: 20 }}>Ask anything — get detailed, structured answers</p>
+            <div className="hint-area" style={{ textAlign: 'center', padding: '36px 16px', animation: mounted ? 'fadeInUp 0.9s ease 0.3s both' : 'none' }}>
+              <div style={{ fontSize: 40, marginBottom: 12, display: 'block', animation: 'float 3s ease-in-out infinite' }}>💬</div>
+              <p style={{ color: '#475569', fontSize: 14, marginBottom: 16 }}>Ask anything — get detailed, structured answers</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
                 {['What is this page about?', 'Summarize the key points', 'What are the main topics?', 'Give me important facts'].map(hint => (
                   <span key={hint} className="hint-chip" onClick={() => setQuestion(hint)}
-                    style={{ background: 'rgba(108,71,255,0.1)', border: '1px solid rgba(108,71,255,0.2)', color: '#8b7cf8', borderRadius: 30, padding: '8px 16px', fontSize: 13, cursor: 'pointer', transition: 'all 0.2s' }}>
+                    style={{ background: 'rgba(108,71,255,0.1)', border: '1px solid rgba(108,71,255,0.2)', color: '#8b7cf8', borderRadius: 30, padding: '7px 14px', fontSize: 13, cursor: 'pointer', transition: 'all 0.2s' }}>
                     {hint}
                   </span>
                 ))}
               </div>
             </div>
           ) : (
-            <div style={{ background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: '28px 28px', marginBottom: 16, maxHeight: 520, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 28 }}>
+            <div className="messages-box" style={{ background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 18, padding: '20px', marginBottom: 12, maxHeight: 'calc(100vh - 320px)', minHeight: 280, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
               {messages.map((m, i) => (
-                <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', animation: m.role === 'ai' ? 'fadeInLeft 0.4s ease' : 'fadeInRight 0.4s ease' }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 12, background: m.role === 'ai' ? 'linear-gradient(135deg, #6c47ff, #00d4ff)' : 'rgba(255,255,255,0.07)', border: m.role === 'user' ? '1px solid rgba(255,255,255,0.1)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0, marginTop: 2, animation: m.role === 'ai' ? 'glowPulse 3s ease-in-out infinite' : 'none' }}>
+                <div key={i} className="msg-gap" style={{ display: 'flex', gap: 14, alignItems: 'flex-start', animation: m.role === 'ai' ? 'fadeInLeft 0.4s ease' : 'fadeInRight 0.4s ease' }}>
+                  <div className="msg-avatar" style={{ width: 36, height: 36, borderRadius: 10, background: m.role === 'ai' ? 'linear-gradient(135deg, #6c47ff, #00d4ff)' : 'rgba(255,255,255,0.07)', border: m.role === 'user' ? '1px solid rgba(255,255,255,0.1)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0, marginTop: 2, animation: m.role === 'ai' ? 'glowPulse 3s ease-in-out infinite' : 'none' }}>
                     {m.role === 'ai' ? 'AI' : 'You'}
                   </div>
-                  <div style={{ flex: 1, paddingTop: 4 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: m.role === 'ai' ? '#6c47ff' : '#475569', marginBottom: 10, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  <div style={{ flex: 1, paddingTop: 2, minWidth: 0 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: m.role === 'ai' ? '#6c47ff' : '#475569', marginBottom: 8, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                       {m.role === 'ai' ? 'AI Answer' : 'Your Question'}
                     </div>
                     {m.role === 'ai' ? (
-                      <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14, padding: '18px 20px' }}>
+                      <div className="ai-bubble" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: '16px 18px' }}>
                         {formatMessage(m.text)}
                       </div>
                     ) : (
-                      <p style={{ color: '#94a3b8', fontSize: 15, lineHeight: 1.7 }}>{m.text}</p>
+                      <p style={{ color: '#94a3b8', fontSize: 14, lineHeight: 1.7, wordBreak: 'break-word' }}>{m.text}</p>
                     )}
                   </div>
                 </div>
               ))}
 
               {loading && (
-                <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', animation: 'fadeInLeft 0.4s ease' }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 12, background: 'linear-gradient(135deg, #6c47ff, #00d4ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>AI</div>
-                  <div style={{ flex: 1, paddingTop: 14 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#6c47ff', marginBottom: 12, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Thinking...</div>
+                <div className="msg-gap" style={{ display: 'flex', gap: 14, alignItems: 'flex-start', animation: 'fadeInLeft 0.4s ease' }}>
+                  <div className="msg-avatar" style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #6c47ff, #00d4ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>AI</div>
+                  <div style={{ flex: 1, paddingTop: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#6c47ff', marginBottom: 10, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Thinking...</div>
                     <div style={{ display: 'flex', gap: 5 }}>
                       {[0, 1, 2].map(i => (
-                        <div key={i} style={{ width: 9, height: 9, borderRadius: '50%', background: '#6c47ff', animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
+                        <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: '#6c47ff', animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
                       ))}
                     </div>
                   </div>
@@ -279,16 +276,16 @@ export default function App() {
           )}
 
           {error && (
-            <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: '14px 18px', color: '#f87171', fontSize: 14, marginBottom: 14, lineHeight: 1.6 }}>
+            <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 16px', color: '#f87171', fontSize: 13, marginBottom: 12, lineHeight: 1.6 }}>
               {error}
             </div>
           )}
 
-          <form onSubmit={handleAsk} style={{ display: 'flex', gap: 10, animation: mounted ? 'fadeInUp 0.9s ease 0.3s both' : 'none' }}>
+          <form className="input-form" onSubmit={handleAsk} style={{ display: 'flex', gap: 10, animation: mounted ? 'fadeInUp 0.9s ease 0.3s both' : 'none' }}>
             <input className="question-input" type="text" placeholder="Ask anything about this page..." value={question} onChange={e => setQuestion(e.target.value)} disabled={loading}
-              style={{ flex: 1, padding: '14px 20px', fontSize: 15, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, color: '#e2e8f0', outline: 'none', transition: 'all 0.3s' }} />
+              style={{ flex: 1, padding: '14px 18px', fontSize: 15, background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, color: '#e2e8f0', outline: 'none', transition: 'all 0.3s', minWidth: 0 }} />
             <button className="ask-btn" type="submit" disabled={loading || !url}
-              style={{ padding: '14px 30px', fontSize: 15, fontWeight: 700, border: 'none', borderRadius: 14, cursor: loading || !url ? 'not-allowed' : 'pointer', background: loading || !url ? 'rgba(108,71,255,0.3)' : 'linear-gradient(135deg, #6c47ff, #00d4ff)', color: '#fff', transition: 'all 0.3s', whiteSpace: 'nowrap', letterSpacing: '0.02em' }}>
+              style={{ padding: '14px 26px', fontSize: 15, fontWeight: 700, border: 'none', borderRadius: 12, cursor: loading || !url ? 'not-allowed' : 'pointer', background: loading || !url ? 'rgba(108,71,255,0.3)' : 'linear-gradient(135deg, #6c47ff, #00d4ff)', color: '#fff', transition: 'all 0.3s', whiteSpace: 'nowrap', letterSpacing: '0.02em', flexShrink: 0 }}>
               {loading ? '...' : 'Ask AI'}
             </button>
           </form>
